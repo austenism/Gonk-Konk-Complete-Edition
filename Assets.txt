@@ -1,0 +1,27 @@
+﻿Content/MenuContent/ComicSans.spritefont - created by Microsoft and is usable by having purchased a copy of Windows 10
+Content/MenuContent/ComicSansMS30.spritefont - created by Microsoft and is usable by having purchased a copy of Windows 10
+
+Contents in this list are all (hopefully) used under fair use for educational reasons
+{
+Content/MenuContent/CantinaBand.mp3 - from Star Wars and is therfore, probably, property of the Disney Corporation(please dont sue me)
+Content/GameContent/legodarthvaderdeathsound.wav - from Lego Star Wars the Complete Saga and is therefore, probably, property of the Disney Corporation(please dont sue me)
+Content/GameContent/legolukeskywalkerdeathsound.wav - from Lego Star Wars the Complete Saga and is therefore, probably, property of the Disney Corporation(please dont sue me)
+Content/GameContent/Legoyodadeathsound.wav - from Lego Star Wars the Complete Saga and is therefore, probably, property of the Disney Corporation(please dont sue me)
+Content/GameContent/TTFAF.mp3 - Through the Fire and Flames by Dragonforce. Owned by Spinefarm Records
+Content/GameContent/sad.mp3 - Only Time by Enya. Owned by Warner Music UK
+Content/GameContent/gunshot.wav - Star Wars Blaster Sound - Owned By the Disney Corporation
+}
+
+All contents of the below list are sprites created by Austen Clemons using https://www.piskelapp.com/ for the purpose of this game:
+{
+Content/MenuContent/Gonk.png
+Content/MenuContent/Konk.png
+Content/MenuContent/star1.png
+Content/MenuContent/star2.png
+Content/MenuContent/star3.png
+Content/GameContent/Gonk.png
+Content/GameContent/Gun.png
+Content/GameContent/Konk.png
+Content/GameContent/Laser.png
+Content/GameContent/StormTrooper.png
+}
