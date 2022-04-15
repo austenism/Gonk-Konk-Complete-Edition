@@ -75,7 +75,7 @@ namespace Gonk_Konk_Complete_Edition
                         Mouse.GetState().X < 150 && Mouse.GetState().Y < 255)
                     {
                         gameState = GameState.Gaming;
-                        _gameLoop = new GamingLoop();
+                        _gameLoop = new GamingLoop(this);
                         _gameLoop.Initialize(Content);
 
                         spriteFont = Content.Load<SpriteFont>("GameContent/ComicSansMS30");

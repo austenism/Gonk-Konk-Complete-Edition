@@ -23,6 +23,11 @@ namespace Gonk_Konk_Complete_Edition.GameLoops
         List<Bullet> bullets = new List<Bullet>();
         List<Enemy> enemies = new List<Enemy>();
         List<Konk> konks = new List<Konk>();
+
+        // The game camera
+        CirclingCamera camera;
+        Game game;
+
         int score = 0;
 
         KeyboardState keyboardCurrent;
@@ -38,27 +43,35 @@ namespace Gonk_Konk_Complete_Edition.GameLoops
         private Song backgroundMusic;
 
 
-        public GamingLoop()
+        public GamingLoop(Game gamu)
         {
-            
-           
+            game = gamu; 
         }
 
         public void Initialize(ContentManager content)
         {
             random = new System.Random(DateTime.Now.Millisecond);
 
+
             //declare the sprite classes
             player = new Player();
-            konks.Add(new Konk(content, 0));
-            konks.Add(new Konk(content, 1));
-            konks.Add(new Konk(content, 2));
-            konks.Add(new Konk(content, 3));
-            konks.Add(new Konk(content, 4));
+            Konk3D konk;
+            konk = new Konk3D(game, Matrix.CreateTranslation(0, -3.75f, 0));
+            konks.Add(new Konk(content, 0, konk));
+            konk = new Konk3D(game, Matrix.CreateTranslation(0, -1.625f, 0));
+            konks.Add(new Konk(content, 1, konk));
+            konk = new Konk3D(game, Matrix.CreateTranslation(0, 0f, 0));
+            konks.Add(new Konk(content, 2, konk));
+            konk = new Konk3D(game, Matrix.CreateTranslation(0, 1.625f, 0));
+            konks.Add(new Konk(content, 3, konk));
+            konk = new Konk3D(game, Matrix.CreateTranslation(0, 3.25f, 0));
+            konks.Add(new Konk(content, 4, konk));
         }
 
         public void LoadContent(ContentManager content)
         {
+            camera = new CirclingCamera(game, new Vector3(0, 3, 10), 0.5f);
+
 
             // TODO: use this.Content to load your game content here
             player.LoadContent(content);
@@ -77,6 +90,8 @@ namespace Gonk_Konk_Complete_Edition.GameLoops
         {
             if (!Loser)
             {
+                camera.Update(gameTime);
+
                 player.Update(gameTime);
 
                 //handle input for gun
@@ -226,7 +241,7 @@ namespace Gonk_Konk_Complete_Edition.GameLoops
             }
             foreach (Konk k in konks)
             {
-                k.Draw(gameTime, _spriteBatch);
+                k.Draw(gameTime, _spriteBatch, camera);
             }
             player.Draw(gameTime, _spriteBatch);
             _spriteBatch.End();

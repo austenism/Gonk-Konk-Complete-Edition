@@ -18,8 +18,11 @@ namespace Gonk_Konk_Complete_Edition.Sprites.GameSprites
 
         float scale = 0.5f;
 
-        public Konk(ContentManager c, int lane)
+        public Konk3D child;
+
+        public Konk(ContentManager c, int lane, Konk3D childs)
         {
+            child = childs;
             LoadContent(c);
             Position = new Vector2(Constants.GAME_WIDTH / 2 - 75, Constants.GAME_HEIGHT - (Constants.GAME_HEIGHT / 5) - ((Constants.GAME_HEIGHT / 5) * lane));
             CollisionBox = new BoundingRectangle(Position, 408 * scale, 256 * scale);
@@ -33,9 +36,10 @@ namespace Gonk_Konk_Complete_Edition.Sprites.GameSprites
             CollisionBox.X = Position.X;
             CollisionBox.Y = Position.Y;
         }
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, CirclingCamera camera)
         {
-            spriteBatch.Draw(texture, Position, null, Color.White, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
+            //spriteBatch.Draw(texture, Position, null, Color.White, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
+            child.Draw(camera);
         }
     }
 }
