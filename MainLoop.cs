@@ -16,6 +16,7 @@ namespace Gonk_Konk_Complete_Edition
             Gaming
         }
 
+        public int HighScore = 0;
 
         public GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -28,13 +29,16 @@ namespace Gonk_Konk_Complete_Edition
         bool wasClicked = false;
         bool isClicked = false;
 
+        KeyboardState current = Keyboard.GetState();
+        KeyboardState prior = Keyboard.GetState();
+
         public MainLoop()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
 
-            _menuLoop = new MenuLoop();
+            _menuLoop = new MenuLoop(this);
         }
 
         protected override void Initialize()
@@ -59,23 +63,29 @@ namespace Gonk_Konk_Complete_Edition
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            current = Keyboard.GetState();
+            
 
             // the update stuff for the menu
             if (gameState == GameState.Menu)
             {
+                    
+                    
+
                 //yes i know this is an awful way to make a button but it was quicker for this instance to do this
                 if (Mouse.GetState().LeftButton == ButtonState.Pressed) isClicked = true;
                 else isClicked = false;
-
-                if (!wasClicked && isClicked)
-                {
-                    if (Mouse.GetState().X > 60 && Mouse.GetState().Y > 195 &&
+                
+                if (Mouse.GetState().X > 60 && Mouse.GetState().Y > 195 &&
                         Mouse.GetState().X < 150 && Mouse.GetState().Y < 255)
+                {
+                    _menuLoop.isHoverButton = true;
+
+                    if (!wasClicked && isClicked)
                     {
+                    
                         gameState = GameState.Gaming;
-                        _gameLoop = new GamingLoop(this);
+                        _gameLoop = new GamingLoop(this, this);
                         _gameLoop.Initialize(Content);
 
                         spriteFont = Content.Load<SpriteFont>("GameContent/ComicSansMS30");
@@ -86,16 +96,37 @@ namespace Gonk_Konk_Complete_Edition
                         _graphics.ApplyChanges();
                     }
                 }
+                else
+                {
+                    _menuLoop.isHoverButton = false;
+                }
                 wasClicked = isClicked;    
 
                 //go into the menu update class
                 _menuLoop.Update(gameTime);
 
-                
+                prior = current;
             }
             else //gamestate is gaming
             {
-                _gameLoop.Update(gameTime, Content);
+                if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+                {
+                    _graphics.PreferredBackBufferWidth = 800;
+                    _graphics.PreferredBackBufferHeight = 480;
+                    _graphics.ApplyChanges();
+
+                    _menuLoop = new MenuLoop(this);
+                    spriteFont = Content.Load<SpriteFont>("MenuContent/ComicSans");
+                    _menuLoop.Initialize();
+                    _menuLoop.LoadContent(Content);
+
+                    gameState = GameState.Menu;
+                }
+                else
+                {
+                    _gameLoop.Update(gameTime, Content);
+                }
+
             }
             base.Update(gameTime);
         }

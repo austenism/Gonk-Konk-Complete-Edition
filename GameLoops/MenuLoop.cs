@@ -17,15 +17,19 @@ namespace Gonk_Konk_Complete_Edition.GameLoops
         private Gonk[] smallerGonks;
         private GenericSprite[] sprites;
 
+        public bool isHoverButton = false;
+
         private Song backgroundMusic;
 
         private Random random;
+
+        private MainLoop parent;
         /// <summary>
         /// contructs the game
         /// </summary>
-        public MenuLoop()
+        public MenuLoop(MainLoop p)
         {
-
+            parent = p;
         }
 
         public void Initialize()
@@ -105,13 +109,22 @@ namespace Gonk_Konk_Complete_Edition.GameLoops
 
             //words
             _spriteBatch.DrawString(spriteFont, "GONK KONK", new Vector2(65, 90), Color.Blue);
-            _spriteBatch.DrawString(spriteFont, "press ESC or B button to exit", new Vector2(0, 0), Color.Blue, 0, new Vector2(0, 0), (float)0.25, SpriteEffects.None, 0);
-            _spriteBatch.DrawString(spriteFont, "start", new Vector2(65, 200), Color.Blue, 0, new Vector2(0, 0), (float)0.5, SpriteEffects.None, 0);
+            _spriteBatch.DrawString(spriteFont, "press ESC to exit", new Vector2(0, 0), Color.Blue, 0, new Vector2(0, 0), (float)0.25, SpriteEffects.None, 0);
+            if (isHoverButton)
+            {
+                _spriteBatch.DrawString(spriteFont, "start", new Vector2(65, 200), Color.LightBlue, 0, new Vector2(0, 0), (float)0.5, SpriteEffects.None, 0);
+            }
+            else
+            {
+                _spriteBatch.DrawString(spriteFont, "start", new Vector2(65, 200), Color.Blue, 0, new Vector2(0, 0), (float)0.5, SpriteEffects.None, 0);
+            }
+            
 
             //sprites layer 1
             mainGonk.Draw(gameTime, _spriteBatch);
 
             _spriteBatch.End();
         }
+
     } 
 }

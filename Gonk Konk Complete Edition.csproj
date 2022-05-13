@@ -8,12 +8,15 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <ApplicationIcon>Icon.ico</ApplicationIcon>
+    <ApplicationIcon>Konk3D.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Content\GameContent\gunshot.mp3" />
     <None Remove="Content\Gonk.png" />
     <None Remove="Content\Konk.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Konk3D.ico" />
   </ItemGroup>
   <ItemGroup>
     <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />

@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Content;
 using System.Text;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
+using Gonk_Konk_Complete_Edition.Sprites.MenuSprites;
 
 namespace Gonk_Konk_Complete_Edition.GameLoops
 {
@@ -17,7 +18,7 @@ namespace Gonk_Konk_Complete_Edition.GameLoops
         private SpriteFont spriteFont;
 
         private Player player;
-        private bool Loser = false;
+        public bool Loser = false;
         private bool playingLoseMusic = false;
 
         List<Bullet> bullets = new List<Bullet>();
@@ -28,7 +29,11 @@ namespace Gonk_Konk_Complete_Edition.GameLoops
         CirclingCamera camera;
         Game game;
 
-        int score = 0;
+        float unmodifiedScore = 0;
+        float score = 0;
+        float accuracy = 0;
+        int TotalBullets = 0;
+        int TotalHits = 0;
 
         KeyboardState keyboardCurrent;
         KeyboardState keyboardPrior = Keyboard.GetState();
@@ -42,10 +47,15 @@ namespace Gonk_Konk_Complete_Edition.GameLoops
         private SoundEffect pew;
         private Song backgroundMusic;
 
+        private MainLoop parent;
 
-        public GamingLoop(Game gamu)
+        private GenericSprite[] sprites;
+
+
+        public GamingLoop(Game gamu, MainLoop p)
         {
-            game = gamu; 
+            game = gamu;
+            parent = p;
         }
 
         public void Initialize(ContentManager content)
@@ -66,6 +76,26 @@ namespace Gonk_Konk_Complete_Edition.GameLoops
             konks.Add(new Konk(content, 3, konk));
             konk = new Konk3D(game, Matrix.CreateTranslation(0, 3.25f, 0));
             konks.Add(new Konk(content, 4, konk));
+
+            sprites = new GenericSprite[200];
+
+            int ran;
+            for (int i = 0; i < 200; i++)
+            {
+                ran = random.Next(1, 3);
+                switch (ran)
+                {
+                    case 1:
+                        sprites[i] = new GenericSprite("star1", new Vector2(random.Next(0, Constants.GAME_WIDTH), random.Next(0, Constants.GAME_HEIGHT)), 3, 3);
+                        break;
+                    case 2:
+                        sprites[i] = new GenericSprite("star2", new Vector2(random.Next(0, Constants.GAME_WIDTH), random.Next(0, Constants.GAME_HEIGHT)), 3, 3);
+                        break;
+                    case 3:
+                        sprites[i] = new GenericSprite("star3", new Vector2(random.Next(0, Constants.GAME_WIDTH), random.Next(0, Constants.GAME_HEIGHT)), 3, 3);
+                        break;
+                }
+            }
         }
 
         public void LoadContent(ContentManager content)
@@ -84,6 +114,11 @@ namespace Gonk_Konk_Complete_Edition.GameLoops
             MediaPlayer.Volume = 0.10f;
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(backgroundMusic);
+
+            foreach (GenericSprite s in sprites)
+            {
+                s.LoadContent(content);
+            }
         }
 
         public void Update(GameTime gameTime, ContentManager content)
@@ -101,14 +136,21 @@ namespace Gonk_Konk_Complete_Edition.GameLoops
                     if (player.facingRight)
                     {
                         bullets.Add(new Bullet(content, player.Position + new Vector2(90, -15), player.facingRight));
+                        TotalBullets++;
                     }
                     else
                     {
                         bullets.Add(new Bullet(content, player.Position + new Vector2(-155, -15), player.facingRight));
+                        TotalBullets++;
                     }
                     pew.Play(0.7f, 0, 0);
                 }
                 keyboardPrior = keyboardCurrent;
+
+                if(score > parent.HighScore)
+                {
+                    parent.HighScore = (int)score;
+                }
             }
             else
             {
@@ -122,7 +164,7 @@ namespace Gonk_Konk_Complete_Edition.GameLoops
             if (spawnTimer <= 0)
             {
                 enemies.Add(new Enemy(content));
-                spawnTimer = (float)random.Next(3, 11) / 10;
+                spawnTimer = (float)random.Next(3, 7) / 10;
             }
             else
             {
@@ -150,10 +192,21 @@ namespace Gonk_Konk_Complete_Edition.GameLoops
                     {
                         bToRemove.Add(b);
                         eToRemove.Add(e);
-                        score += 100;
+
+                        TotalHits++;
+
+                        unmodifiedScore += 100;
+                        
                     }
                 }
             }
+            if(TotalBullets > 0)
+            {
+                accuracy = (float)TotalHits / (float)TotalBullets;
+                score = unmodifiedScore * (float)Math.Round(accuracy, 2);
+            }
+            
+
             foreach (Bullet b in bToRemove)
             {
                 bullets.Remove(b);
@@ -203,7 +256,7 @@ namespace Gonk_Konk_Complete_Edition.GameLoops
             eToRemove.Clear();
 
             //check for loss condition
-            if (konks.Count < 4)
+            if (konks.Count < 5)
             {
                 Loser = true;
             }
@@ -217,20 +270,31 @@ namespace Gonk_Konk_Complete_Edition.GameLoops
 
             StringBuilder sb = new StringBuilder();
             sb.Append("Score: ");
-            sb.Append(score.ToString());
+            sb.Append(unmodifiedScore.ToString());
+            sb.Append($" * Accuracy: {Math.Round(accuracy, 2)} = {(int)score}");
+
+            StringBuilder sb2 = new StringBuilder();
+            sb2.Append("High Score: ");
+            sb2.Append(parent.HighScore.ToString());
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
+
+            foreach (GenericSprite gs in sprites)
+            {
+                gs.Draw(gameTime, _spriteBatch);
+            }
+
             if (!Loser)
             {
-                _spriteBatch.DrawString(spriteFont, "Protect at least 4 of your precious Konks!", new Vector2(0, 0), Color.Red, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
-                _spriteBatch.DrawString(spriteFont, sb.ToString(), new Vector2(5, 850), Color.Red, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
+                _spriteBatch.DrawString(spriteFont, "Protect your precious Konks!", new Vector2(0, 0), Color.Red, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
             }
             else
             {
-                _spriteBatch.DrawString(spriteFont, "YOU HAVE FAILED, press esc to exit", new Vector2(0, 0), Color.Red, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
-                _spriteBatch.DrawString(spriteFont, sb.ToString(), new Vector2(5, 850), Color.Red, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
+                _spriteBatch.DrawString(spriteFont, "YOU HAVE FAILED, press esc to exit to the menu", new Vector2(0, 0), Color.Red, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
             }
-
+            _spriteBatch.DrawString(spriteFont, sb.ToString(), new Vector2(5, 850), Color.Red, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
+            _spriteBatch.DrawString(spriteFont, sb2.ToString(), new Vector2(1000, 850), Color.Red, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
+            
             foreach (Bullet b in bullets)
             {
                 b.Draw(gameTime, _spriteBatch);
